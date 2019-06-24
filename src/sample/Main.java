@@ -15,7 +15,7 @@ public class Main extends Application {
         Parent root = (Parent)loader.load();
         MainMenu controller = (MainMenu)loader.getController();
         controller.setStage(primaryStage);
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("SPLAT App");
         primaryStage.setScene(new Scene(root, 700, 400));
         primaryStage.show();
     }
