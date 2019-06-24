@@ -19,7 +19,7 @@
             <Label layoutX="246.0" layoutY="95.0" text="Расширение файлов: " />
             <Button fx:id="buttonSearch" layoutX="246.0" layoutY="127.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="119.0" text="Искать" />
             <Button fx:id="buttonChooseDir" layoutX="375.0" layoutY="127.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="119.0" text="Выбрать папку" />
-            <TextArea fx:id="searchResult" layoutX="501.0" layoutY="46.0" prefHeight="87.0" prefWidth="177.0" />
+            <TextArea fx:id="searchResult" layoutX="246.0" layoutY="171.0" prefHeight="87.0" prefWidth="437.0" />
             <VBox fx:id="root" layoutX="14.0" layoutY="43.0" prefHeight="200.0" prefWidth="200.0" />
             <TreeView fx:id="treeView" layoutX="14.0" layoutY="40.0" prefHeight="200.0" prefWidth="200.0" />
          </children>

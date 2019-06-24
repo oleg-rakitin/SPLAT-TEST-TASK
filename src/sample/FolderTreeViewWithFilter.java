@@ -6,7 +6,9 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
 
 import javafx.application.Application;
@@ -22,6 +24,7 @@ public class FolderTreeViewWithFilter {
 
 
     private static String dirPath = "src";
+    private static TextField fileExt = null;
 
     TreeItem<FilePath> rootTreeItem;
 
@@ -32,6 +35,10 @@ public class FolderTreeViewWithFilter {
         dirPath= dir;
     }
 
+    public static void setFileExtension(TextField fExt){
+        fileExt= fExt;
+    }
+
     public void start(Stage primaryStage,TreeView<FilePath> trView, TextField txField, VBox root) throws IOException {
 
         // root component
@@ -40,14 +47,20 @@ public class FolderTreeViewWithFilter {
 
 
         // filter
-        txField.textProperty().addListener((observable, oldValue, newValue) -> filterChanged(newValue,trView));
+        System.out.println(txField.getText() + "TEST");
+        //createTreeRoot();
+        //filterChanged(txField.getText(),trView);
+        //txField.textProperty().addListener((observable, oldValue, newValue) -> filterChanged(newValue,trView));
 
         // treeview
-        VBox.setVgrow(trView, Priority.ALWAYS);
+        root.setVgrow(trView, Priority.ALWAYS);
         createTree();
+        filterChanged(txField.getText(),trView);
 
 
-        trView.setRoot(rootTreeItem);
+        //TreeItem<FilePath> filteredRoot = createTreeRoot();
+        //filter(rootTreeItem, txField.getText(), filteredRoot);
+        //trView.setRoot(filteredRoot);
     }
 
     private void createTree() throws IOException {
@@ -68,24 +81,43 @@ public class FolderTreeViewWithFilter {
 
     }
 
+    static boolean useLoop(List<Path> arr, Path targetValue) {
+        for(Path s: arr){
+            //System.out.println(s.toString() " AND ");
+            if(s.equals(targetValue) || s.getParent().equals(targetValue))
+                return true;
+        }
+        return false;
+    }
+
     public static void createTree(TreeItem<FilePath> rootItem) throws IOException {
 
+        List<Path> pathFiles = MainMenu.getFiles();
+        TreeItem<FilePath> newItem = null;
+        //DirectoryStream<Path> f = Files.newDirectoryStream(pathFiles);
+        System.out.println(pathFiles);
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(rootItem.getValue().getPath())) {
-
             for (Path path : directoryStream) {
 
-                TreeItem<FilePath> newItem = new TreeItem<FilePath>( new FilePath( path));
-                newItem.setExpanded(true);
+                if (useLoop(pathFiles, path)) {
+                    newItem = new TreeItem<FilePath>(new FilePath(path));
+                    newItem.setExpanded(true);
 
-                rootItem.getChildren().add(newItem);
+                    rootItem.getChildren().add(newItem);
 
-                if (Files.isDirectory(path)) {
-                    createTree(newItem);
+                    System.out.println("FWQFQWFQWFQWFQWFQWFQWF");
+                    if (Files.isDirectory(path)) {
+                        createTree(newItem);
+                    }
+                    //if (Arrays.asList(pathFiles).contains(path)) {
+
+                    //}
+                    System.out.println(path + " PATH");
                 }
             }
         }
         // catch exceptions, e. g. java.nio.file.AccessDeniedException: c:\System Volume Information, c:\$RECYCLE.BIN
-        catch( Exception ex) {
+        catch (Exception ex) {
             ex.printStackTrace();
         }
     }

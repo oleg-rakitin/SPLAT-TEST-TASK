@@ -28,6 +28,13 @@ public class MainMenu {
     private String fileExtension, inputTextSearch;
     public static String dirPath;
 
+    //READ FILE
+    private static List<Path> files = new ArrayList<Path>();
+    private static List<String> strings = new ArrayList<String>();
+    private static Map<Path, Map<Integer,String>> infoString = new HashMap<Path, Map<Integer,String>>();
+    ///////////
+
+
     public static String getPath(){
         return dirPath;
     }
@@ -70,7 +77,7 @@ public class MainMenu {
     public void setStage(Stage stage) {
         myStage = stage;
     }
-
+    private static List<Path> filePath1 = new ArrayList<Path>();
 
 
     public static Stream<NumberedLine> lines(Path p) throws IOException {
@@ -87,7 +94,8 @@ public class MainMenu {
                     throw new UncheckedIOException(e);
                 }
                 if (s == null) return false;
-                action.accept(new NumberedLine(++line, s));
+                action.accept(new NumberedLine(++line, s,p));
+                System.out.println(p);
                 return true;
             }
         };
@@ -98,6 +106,58 @@ public class MainMenu {
                 throw new UncheckedIOException(e);
             }
         });
+    }
+
+
+    public static void testSe(Path path,String searchText,String fileExtension) throws IOException {
+        Files.walk(path)
+                .filter(Files::isRegularFile)
+                .forEach((f) -> {
+                    String file = f.toString();
+                    if (file.endsWith(fileExtension)) {
+                        int count = 0;
+                        int count1=0;
+                        Path oldPath=null;
+                        Map<Integer,String> map = new HashMap<Integer,String>();
+                        FileReader fileIn = null;
+                        try {
+                            fileIn = new FileReader(file);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        BufferedReader reader = new BufferedReader(fileIn);
+                        String line = null;
+                        while(true) {
+                            count1++;
+                            try {
+                                if (!((line = reader.readLine()) != null)) break;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if((line.contains(searchText))) {
+                                count++;
+                                map.put(count1,line);
+                                infoString.put(f,map);
+
+                                if(f != oldPath)
+                                    files.add(f);
+                                //else
+                                //    files.clear();
+                                oldPath=f;
+                            }
+
+                        }
+                    }
+                });
+    }
+
+    public static Object getKeyFromValue(Map hm, Object value) {
+        for (Object o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
     }
 
     @FXML
@@ -123,49 +183,39 @@ public class MainMenu {
         });*/
 
         buttonSearch.setOnAction(event -> {
-            fileExtension = inputFileExtension.getText();
-            inputTextSearch = InputTextSearch.getText();
-            System.out.println(fileExtension);
-            List<File> filesInFolder = null;
+            searchResult.clear();
+
+            //treeView.setRoot(null);
+            //root.getChildren().removeAll();
             try {
-                /*filesInFolder = Files.walk(Paths.get(dirPath))
-                        .filter(Files::isRegularFile)
-                        .map(Path::toFile)
-                        .collect(Collectors.toList());*/
-                Files.walk(Paths.get(dirPath)).parallel().filter(Files::isRegularFile).forEach(filePath -> {
-
-                    String name = filePath.getFileName().toString();
-
-                    if (name.endsWith(fileExtension) && !InputTextSearch.getText().equals("")) {
-                        List<String> all = null;
-                        try (Stream<NumberedLine> s = lines(filePath)) {
-                            all = s.filter(nl -> nl.getLine().contains(inputTextSearch))
-                                    .map(NumberedLine::toString)
-                                    .collect(Collectors.toList());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        for (int i = 0; i < all.size(); i++) {
-                            if (!all.isEmpty()) {
-                                searchResult.appendText(filePath + " : " + all.get(i));
-                                searchResult.appendText("\n");
-                            } else {
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setHeaderText(null);
-                                alert.setTitle("ERROR");
-                                alert.setContentText("Запрашиваемый текст не найден");
-                                alert.showAndWait();
-                            }
-                        }
-
-                    }
-                });
+                files.clear();
+                testSe(Paths.get(dirPath),InputTextSearch.getText(),inputFileExtension.getText());
+                FolderTreeViewWithFilter.setDirPath(String.valueOf(dirPath));
+                FolderTreeViewWithFilter fl = new FolderTreeViewWithFilter();
+                fl.start(myStage,treeView,inputFileExtension,root);
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("error!");
+            }
+
+            for (Map.Entry<Path, Map<Integer, String>> entry : infoString.entrySet()) {
+                Path key = entry.getKey();
+
+
+                //searchResult.appendText(key.toString() + " ");
+                System.out.println(key);
+                for (Map.Entry<Integer, String> entry1 : infoString.get(entry.getKey()).entrySet()) {
+                    Integer i2 = entry1.getKey();
+                    String str = entry1.getValue();
+                    searchResult.appendText(key.toString() + " " + i2 + " " + str);
+                    searchResult.appendText("\n");
+                    //System.out.println(i2);
+                    //System.out.println(str);
+                }
+                //searchResult.appendText("\n");
 
             }
-            //System.out.println(getFilesExtension(filesInFolder));
+            infoString.clear();
+
         });
         buttonChooseDir.setOnAction(event -> {
             try {
@@ -192,10 +242,8 @@ public class MainMenu {
         File selectedDirectory = directoryChooser.showDialog(primaryStage);
         try {
             dirPath = selectedDirectory.getAbsolutePath();
-            FolderTreeViewWithFilter.setDirPath(dirPath);
-            FolderTreeViewWithFilter fl = new FolderTreeViewWithFilter();
-            fl.start(myStage,treeView,inputFileExtension,root);
-        } catch (RuntimeException | IOException exc) {
+
+        } catch (RuntimeException e ) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setHeaderText(null);
             alert.setTitle("ERROR");
@@ -204,6 +252,11 @@ public class MainMenu {
         }
         System.out.println(dirPath);
 
+    }
+
+    public static List<Path> getFiles()
+    {
+        return files;
     }
 
     private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {
