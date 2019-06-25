@@ -28,8 +28,7 @@
                   <TabPane fx:id="tabsPane" prefHeight="466.0" prefWidth="376.0" tabClosingPolicy="UNAVAILABLE" />
                </children>
             </VBox>
-            <Button fx:id="wqf" layoutX="140.0" layoutY="356.0" mnemonicParsing="false" text="Button" />
-            <Button fx:id="nextLine" layoutX="241.0" layoutY="356.0" mnemonicParsing="false" text="Next" />
+            <Button fx:id="nextLine" layoutX="347.0" layoutY="350.0" mnemonicParsing="false" text="Next" />
          </children>
       </AnchorPane>
       <Label layoutX="348.0" layoutY="33.0" text="SPLAT" textFill="WHITE">

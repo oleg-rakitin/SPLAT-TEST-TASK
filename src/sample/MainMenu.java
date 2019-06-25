@@ -27,26 +27,20 @@ import static sample.fileSearchConst.ROOT_FOLDER;
 
 public class MainMenu {
 
-    private String fileExtension, inputTextSearch;
     public static String dirPath;
 
-    //READ FILE
     private static List<Path> files = new ArrayList<Path>();
-    private static List<String> strings = new ArrayList<String>();
     private static Map<Path, Map<Integer,String>> infoString = new HashMap<Path, Map<Integer,String>>();
-    private static ArrayList<Integer> textLines = new ArrayList<Integer>();
     private static  Map<Integer,Path> pathKeyLineValue = new HashMap<Integer,Path>();
-    private static List<Integer> lineArray = new ArrayList<Integer>();
-    private static List<Integer> lineArrayNew = new ArrayList<Integer>();
     private static ArrayList<List<Integer>> arrArr = new ArrayList<List<Integer>>();
     private static List<Path> keyList = new ArrayList<Path>();
     private static int selctedTabIndex;
-    ///////////
+    private TabsPane tP = new TabsPane();
+    private int i2=0;
+    private int iterLines =0;
+    private Stage myStage;
 
 
-    public static String getPath(){
-        return dirPath;
-    }
 
     @FXML
     private ResourceBundle resources;
@@ -65,7 +59,7 @@ public class MainMenu {
 
     @FXML
     public Button buttonSearch;
-    public Button wqf;
+
     @FXML
     private Button buttonChooseDir;
 
@@ -85,20 +79,16 @@ public class MainMenu {
     public TreeView<FolderTreeViewWithFilter.FilePath> treeView;
 
     @FXML
-    private Button c;
-
-    @FXML
     private Button nextLine;
 
-    private Stage myStage;
 
     public void setStage(Stage stage) {
         myStage = stage;
     }
-    private static List<Path> filePath1 = new ArrayList<Path>();
-    private TabsPane tP = new TabsPane();
-    private int i2=0;
-    private int iterLines =0;
+
+    public static String getPath(){
+        return dirPath;
+    }
 
     public static Stream<NumberedLine> lines(Path p) throws IOException {
         BufferedReader b = new BufferedReader(new InputStreamReader(new FileInputStream(p.toString()), "utf-8"));
@@ -163,8 +153,6 @@ public class MainMenu {
 
                                 if(f != oldPath)
                                     files.add(f);
-                                //else
-                                //    files.clear();
                                 oldPath=f;
                             }
 
@@ -173,14 +161,6 @@ public class MainMenu {
                 });
     }
 
-    public static Object getKeyFromValue(Map hm, Object value) {
-        for (Object o : hm.keySet()) {
-            if (hm.get(o).equals(value)) {
-                return o;
-            }
-        }
-        return null;
-    }
 
     @FXML
     void initialize() throws Exception {
@@ -249,7 +229,7 @@ public class MainMenu {
                                 String str = entry1.getValue();
                                 try {
                                     if (oldkey != key)
-                                        tP.Init(tabBox, tabsPane, wqf, key);
+                                        tP.Init(tabBox, tabsPane, key);
                                     oldkey = key;
                                 } catch (Exception e) {
                                     e.printStackTrace();

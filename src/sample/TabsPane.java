@@ -38,7 +38,7 @@ public class TabsPane {
 
 
 
-    public void Init(VBox layout, TabPane tabPane1, Button b,Path path) throws Exception {
+    public void Init(VBox layout, TabPane tabPane1, Path path) throws Exception {
 
         //tabPane = new javafx.scene.control.TabPane();
         // tabPane1.setPrefSize(200, 150);
@@ -46,7 +46,7 @@ public class TabsPane {
         layout.setSpacing(10);
         //layout = createTabControls(tabPane);
 
-        createTabControls(tabPane1, b, path);
+        createTabControls(tabPane1, path);
         layout.setPadding(new Insets(10));
         VBox.setVgrow(tabPane1, Priority.ALWAYS);
 
@@ -63,44 +63,28 @@ public class TabsPane {
         return hm;
     }
 
-    private Button createTabControls(javafx.scene.control.TabPane tabPane, Button b, Path path) {
-        //Button addTab = new Button("New Tab");
+    private void createTabControls(javafx.scene.control.TabPane tabPane, Path path) {
+
         List<Path> p = MainMenu.getFiles();
 
-        // b.setOnAction(event -> {
-        // try {
         int ee = tabPane.getTabs().size();
-        //if (ee != 0)
-        //    tabPane.getTabs().remove(0, ee);
-        //for(int i = 0;i<p.size();i++) {
+
         try {
             tabPane.getTabs().add(
                     createTab(path));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //   );
-        //   }
-        // } catch (IOException e) {
-        //    e.printStackTrace();
-        // }
+
         for (int i = 0; i < tabPane.getTabs().size(); i++) {
             System.out.println(tabList.add(tabPane.getTabs().get(i)));
         }
         for (Map.Entry<Integer, TextArea> entry1 : hm.entrySet()) {
             Integer i2 = entry1.getKey();
             System.out.println(i2);
-            //textLines.add(i2);
             TextArea str = entry1.getValue();
             System.out.println(str);
         }
-        //tabPane.getSelectionModel().selectLast();
-        // });
-        b.setMinSize(
-                b.USE_PREF_SIZE,
-                b.USE_PREF_SIZE
-        );
-        return b;
     }
 
 
