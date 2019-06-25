@@ -90,38 +90,8 @@ public class MainMenu {
         return dirPath;
     }
 
-    public static Stream<NumberedLine> lines(Path p) throws IOException {
-        BufferedReader b = new BufferedReader(new InputStreamReader(new FileInputStream(p.toString()), "utf-8"));
-        Spliterator<NumberedLine> sp = new Spliterators.AbstractSpliterator<NumberedLine>(
-                Long.MAX_VALUE, Spliterator.ORDERED | Spliterator.NONNULL) {
-            int line;
 
-            public boolean tryAdvance(Consumer<? super NumberedLine> action) {
-                String s;
-                try {
-                    s = b.readLine();
-                } catch (IOException e) {
-                    throw new UncheckedIOException(e);
-                }
-                if (s == null) return false;
-                action.accept(new NumberedLine(++line, s,p));
-                System.out.println(p);
-                return true;
-            }
-        };
-        return StreamSupport.stream(sp, false).onClose(() -> {
-            try {
-                b.close();
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
-        });
-    }
-
-
-
-
-    public static void testSe(Path path,String searchText,String fileExtension) throws IOException {
+    public static void findText(Path path,String searchText,String fileExtension) throws IOException {
         Files.walk(path)
                 .filter(Files::isRegularFile)
                 .forEach((f) -> {
@@ -191,15 +161,18 @@ public class MainMenu {
 
 
         buttonSearch.setOnAction(event -> {
+
             if (dirPath != null) {
                 if (!InputTextSearch.getText().isEmpty()) {
                     if (!inputFileExtension.getText().isEmpty()) {
                         searchResult.clear();
                         arrArr.clear();
                         Path oldkey = null;
+                        int ee = tabsPane.getTabs().size();
+                        tabsPane.getTabs().remove(0, ee);
                         try {
                             files.clear();
-                            testSe(Paths.get(dirPath), InputTextSearch.getText(), inputFileExtension.getText());
+                            findText(Paths.get(dirPath), InputTextSearch.getText(), inputFileExtension.getText());
                             FolderTreeViewWithFilter.setDirPath(String.valueOf(dirPath));
                             FolderTreeViewWithFilter fl = new FolderTreeViewWithFilter();
                             fl.start(myStage, treeView, inputFileExtension, root);

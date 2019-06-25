@@ -41,37 +41,21 @@ public class FolderTreeViewWithFilter {
 
     public void start(Stage primaryStage,TreeView<FilePath> trView, TextField txField, VBox root) throws IOException {
 
-        // root component
-        //TreeItem<Path> rootTreeItem = new TreeItem<Path>(Paths.get( ROOT_FOLDER));
-        //rootTreeItem.setExpanded(true);
-
-
-        // filter
         System.out.println(txField.getText() + "TEST");
-        //createTreeRoot();
-        //filterChanged(txField.getText(),trView);
-        //txField.textProperty().addListener((observable, oldValue, newValue) -> filterChanged(newValue,trView));
 
         // treeview
         root.setVgrow(trView, Priority.ALWAYS);
         createTree();
         filterChanged(txField.getText(),trView);
 
-
-        //TreeItem<FilePath> filteredRoot = createTreeRoot();
-        //filter(rootTreeItem, txField.getText(), filteredRoot);
-        //trView.setRoot(filteredRoot);
     }
 
     private void createTree() throws IOException {
 
-        // create root
         rootTreeItem = createTreeRoot();
 
-        // create tree structure recursively
         createTree( rootTreeItem);
 
-        // sort tree structure by name
         rootTreeItem.getChildren().sort( Comparator.comparing( new Function<TreeItem<FilePath>, String>() {
             @Override
             public String apply(TreeItem<FilePath> t) {
@@ -83,7 +67,6 @@ public class FolderTreeViewWithFilter {
 
     static boolean useLoop(List<Path> arr, Path targetValue) {
         for(Path s: arr){
-            //System.out.println(s.toString() " AND ");
             if(s.equals(targetValue) || s.getParent().equals(targetValue))
                 return true;
         }
@@ -94,7 +77,6 @@ public class FolderTreeViewWithFilter {
 
         List<Path> pathFiles = MainMenu.getFiles();
         TreeItem<FilePath> newItem = null;
-        //DirectoryStream<Path> f = Files.newDirectoryStream(pathFiles);
         System.out.println(pathFiles);
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(rootItem.getValue().getPath())) {
             for (Path path : directoryStream) {
@@ -109,14 +91,10 @@ public class FolderTreeViewWithFilter {
                     if (Files.isDirectory(path)) {
                         createTree(newItem);
                     }
-                    //if (Arrays.asList(pathFiles).contains(path)) {
-
-                    //}
                     System.out.println(path + " PATH");
                 }
             }
         }
-        // catch exceptions, e. g. java.nio.file.AccessDeniedException: c:\System Volume Information, c:\$RECYCLE.BIN
         catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -170,12 +148,9 @@ public class FolderTreeViewWithFilter {
 
             this.path = path;
 
-            // display text: the last path part
-            // consider root, e. g. c:\
             if( path.getNameCount() == 0) {
                 this.text = path.toString();
             }
-            // consider folder structure
             else {
                 this.text = path.getName( path.getNameCount() - 1).toString();
             }

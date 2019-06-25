@@ -39,20 +39,12 @@ public class TabsPane {
 
 
     public void Init(VBox layout, TabPane tabPane1, Path path) throws Exception {
-
-        //tabPane = new javafx.scene.control.TabPane();
-        // tabPane1.setPrefSize(200, 150);
-
         layout.setSpacing(10);
-        //layout = createTabControls(tabPane);
 
         createTabControls(tabPane1, path);
         layout.setPadding(new Insets(10));
         VBox.setVgrow(tabPane1, Priority.ALWAYS);
 
-        //final Scene scene = new Scene(layout);
-        //stage.setScene(scene);
-        //stage.show();
     }
 
     public static List<Tab> getTabList(){
@@ -64,10 +56,6 @@ public class TabsPane {
     }
 
     private void createTabControls(javafx.scene.control.TabPane tabPane, Path path) {
-
-        List<Path> p = MainMenu.getFiles();
-
-        int ee = tabPane.getTabs().size();
 
         try {
             tabPane.getTabs().add(
@@ -95,6 +83,8 @@ public class TabsPane {
 
     private Tab createTab(Path path) throws IOException {
 
+
+
         List<Path> files = MainMenu.getFiles();
         Tab tab = new Tab(path.toString());
         StackPane tabLayout = new StackPane();
@@ -121,45 +111,29 @@ public class TabsPane {
     }
 
     public void getFindedLine(TextArea ta, int line) {
-        //ta.setStyle("-fx-font-size: 12");
         Platform.runLater(() -> {
 
-            // Define desired line
-            //final int line = 30;
             System.out.println("TabsPane : " + ta);
-            // Index of the first character in line that we look for.
             int index = 0;
-            // for this example following line will work:
-            // int index = ta.getText().indexOf("Line " + line);
 
-            // for lines that do not contain its index we rely on "\n" count
             int linesEncountered = 0;
             boolean lineFound = false;
             for (int i = 0; i < ta.getText().length(); i++) {
-                // count characters on our way to our desired line
                 index++;
 
                 if (ta.getText().charAt(i) == '\n') {
-                    // next line char encountered
+
                     linesEncountered++;
                     if (linesEncountered == line - 1) {
-                        // next line is what we're looking for, stop now
                         lineFound = true;
                         break;
                     }
                 }
             }
-            Highlighter.HighlightPainter painter =
-                    new DefaultHighlighter.DefaultHighlightPainter( Color.cyan );
-            // scroll only if line found
+
             if (lineFound) {
-                // Get bounds of the first character in the line using internal API (see comment below the code)
-                //final HighlightableTextArea highlightableTextArea = new HighlightableTextArea();
                 Rectangle2D lineBounds = ((com.sun.javafx.scene.control.skin.TextAreaSkin) ta.getSkin()).getCharacterBounds(index);
-                //highlightableTextArea.setText(lineBounds);
 
-
-                // Scroll to the top-Y of our line
                 ta.setScrollTop(lineBounds.getMinY () + this.tArea.getScrollTop ());
                 ta.selectRange(5,line);
             }
@@ -175,10 +149,7 @@ public class TabsPane {
     }
 
     public static TextArea readFile(Path path, String fileExtension) throws IOException {
-        //String line = null;
         TextArea tx = new TextArea();
-        Label tabText = new Label();
-        //tabText.addText
         Files.walk(path)
                 .filter(Files::isRegularFile)
                 .forEach((f) -> {
@@ -189,7 +160,6 @@ public class TabsPane {
 
                         try (BufferedReader br = Files.newBufferedReader(f)) {
 
-                            // read line by line
                             String line;
                             while ((line = br.readLine()) != null) {
                                 tx.appendText(line);
@@ -201,32 +171,6 @@ public class TabsPane {
                         }
 
                         System.out.println(tx);
-
-                        /*FileReader fileIn = null;
-                        try {
-                            fileIn = new FileReader(file);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-                        BufferedReader reader = new BufferedReader(fileIn);
-
-                        while (true) {
-                            try {
-                                if (!(reader.readLine() != null)) break;
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            try {
-                                System.out.println(reader.readLine());
-                                tx.appendText(reader.readLine());
-                                tx.appendText("\n");
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    }*/
                     }
                 });
         System.out.println(line);
