@@ -144,20 +144,30 @@ public class MainMenu {
 
                     nextLine.setOnAction(event -> {
                         System.out.println(tabsPane.getSelectionModel().getSelectedItem() + "TQWTW");
-                        List<Integer> lines = arrArr.get(selctedTabIndex);
-                        ObservableList<Tab> t = tabsPane.getTabs();
-                        System.out.println("OBS LIST TAB: " + t.get(tabsPane.getSelectionModel().getSelectedIndex()));
-                        if (iterLines < lines.size()) {
-                            tP.getFindedLine(tP.getTextArea(tabsPane.getSelectionModel().getSelectedIndex()), lines.get(iterLines));
-                            System.out.println("LINE "+lines.get(iterLines));
-                            System.out.println("SELECTED TEXT AREA: " + tP.getTextArea(tabsPane.getSelectionModel().getSelectedIndex()));
-                            System.out.println(iterLines + " Выполнено!");
-                            iterLines++;
-                        } else {
-                            iterLines = 0;
-                            System.out.println(iterLines + " ЗАНОГО!");
+                        try {
+                            List<Integer> lines = arrArr.get(selctedTabIndex);
+                            ObservableList<Tab> t = tabsPane.getTabs();
+                            System.out.println("OBS LIST TAB: " + t.get(tabsPane.getSelectionModel().getSelectedIndex()));
+                            if (iterLines < lines.size()) {
+                                tP.getFindedLine(tP.getTextArea(tabsPane.getSelectionModel().getSelectedIndex()), lines.get(iterLines));
+                                System.out.println("LINE " + lines.get(iterLines));
+                                System.out.println("SELECTED TEXT AREA: " + tP.getTextArea(tabsPane.getSelectionModel().getSelectedIndex()));
+                                System.out.println(iterLines + " Выполнено!");
+                                iterLines++;
+                            } else {
+                                iterLines = 0;
+                                System.out.println(iterLines + " ЗАНОГО!");
+                            }
+                        } catch (Exception e) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setHeaderText(null);
+                            alert.setTitle("ERROR");
+                            alert.setContentText("Данные не загружены");
+                            alert.showAndWait();
                         }
-                    });
+                    }
+
+        );
 
 
         buttonSearch.setOnAction(event -> {
