@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -32,6 +33,8 @@ public class MainMenu {
     private static List<Path> files = new ArrayList<Path>();
     private static List<String> strings = new ArrayList<String>();
     private static Map<Path, Map<Integer,String>> infoString = new HashMap<Path, Map<Integer,String>>();
+    private static ArrayList<Integer> textLines = new ArrayList<Integer>();
+    private static  Map<Integer,Path> pathKeyLineValue = new HashMap<Integer,Path>();
     ///////////
 
 
@@ -56,7 +59,7 @@ public class MainMenu {
 
     @FXML
     public Button buttonSearch;
-
+    public Button wqf;
     @FXML
     private Button buttonChooseDir;
 
@@ -67,10 +70,19 @@ public class MainMenu {
     private VBox root;
 
     @FXML
+    private VBox tabBox;
+
+    @FXML
+    private TabPane tabsPane;
+
+    @FXML
     public TreeView<FolderTreeViewWithFilter.FilePath> treeView;
 
     @FXML
     private Button c;
+
+    @FXML
+    private Button nextLine;
 
     private Stage myStage;
 
@@ -78,7 +90,9 @@ public class MainMenu {
         myStage = stage;
     }
     private static List<Path> filePath1 = new ArrayList<Path>();
-
+    private TabsPane tP = new TabsPane();
+    private int i2=0;
+    private int iterLines =0;
 
     public static Stream<NumberedLine> lines(Path p) throws IOException {
         BufferedReader b = new BufferedReader(new InputStreamReader(new FileInputStream(p.toString()), "utf-8"));
@@ -107,6 +121,8 @@ public class MainMenu {
             }
         });
     }
+
+
 
 
     public static void testSe(Path path,String searchText,String fileExtension) throws IOException {
@@ -161,9 +177,10 @@ public class MainMenu {
     }
 
     @FXML
-    void initialize() throws IOException {
+    void initialize() throws Exception {
 
-
+        //tArea.setStyle("-fx-font-size: 12");
+        //tP.Init(tabBox,tabsPane,wqf);
         /*//treeView = new TreeView<String>();
         c.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
@@ -180,6 +197,30 @@ public class MainMenu {
                     treeView.setRoot(getNodesForDirectory(choice));
                 }
             }
+        });*/
+
+
+
+                    nextLine.setOnAction(event -> {
+                        System.out.println(tabsPane.getSelectionModel().getSelectedItem() + "TQWTW");
+                        //if(tabsPane.getSelectionModel().getSelectedItem().getText() == tp.ge)
+                        int index = files.indexOf(tabsPane.getSelectionModel().getSelectedItem().getText());
+                        if(index==tabsPane.getSelectionModel().getSelectedIndex())
+                                if(iterLines<textLines.size()) {
+                                    tP.getFindedLine(tP.getTextArea(), textLines.get(iterLines));
+                                    System.out.println(iterLines + " Выполнено!");
+                                    iterLines++;
+                                }
+                                else{
+                                    iterLines=0;
+                                    System.out.println(iterLines + " ЗАНОГО!");
+                                }
+                    });
+
+
+        /*nextLine.setOnAction(event -> {
+            tP.getFindedLine(tP.getTextArea(),i2);
+            System.out.println(i2);
         });*/
 
         buttonSearch.setOnAction(event -> {
@@ -200,12 +241,18 @@ public class MainMenu {
             for (Map.Entry<Path, Map<Integer, String>> entry : infoString.entrySet()) {
                 Path key = entry.getKey();
 
-
                 //searchResult.appendText(key.toString() + " ");
                 System.out.println(key);
                 for (Map.Entry<Integer, String> entry1 : infoString.get(entry.getKey()).entrySet()) {
-                    Integer i2 = entry1.getKey();
+                    i2 = entry1.getKey();
+                    System.out.println(i2);
+                    textLines.add(i2);
                     String str = entry1.getValue();
+                    try {
+                        tP.Init(tabBox,tabsPane,wqf);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     searchResult.appendText(key.toString() + " " + i2 + " " + str);
                     searchResult.appendText("\n");
                     //System.out.println(i2);
@@ -214,6 +261,7 @@ public class MainMenu {
                 //searchResult.appendText("\n");
 
             }
+            System.out.println("RESULT : " + pathKeyLineValue);
             infoString.clear();
 
         });

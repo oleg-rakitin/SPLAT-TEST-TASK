@@ -16,7 +16,7 @@ public class Main extends Application {
         MainMenu controller = (MainMenu)loader.getController();
         controller.setStage(primaryStage);
         primaryStage.setTitle("SPLAT App");
-        primaryStage.setScene(new Scene(root, 700, 400));
+        primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
     }
 
