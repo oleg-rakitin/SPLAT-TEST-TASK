@@ -270,7 +270,7 @@ public class MainMenu {
 
     private void dirChoose(Stage primaryStage) throws NullPointerException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(new File("src"));
+        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         File selectedDirectory = directoryChooser.showDialog(primaryStage);
         try {
             dirPath = selectedDirectory.getAbsolutePath();
