@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
@@ -35,6 +36,11 @@ public class MainMenu {
     private static Map<Path, Map<Integer,String>> infoString = new HashMap<Path, Map<Integer,String>>();
     private static ArrayList<Integer> textLines = new ArrayList<Integer>();
     private static  Map<Integer,Path> pathKeyLineValue = new HashMap<Integer,Path>();
+    private static List<Integer> lineArray = new ArrayList<Integer>();
+    private static List<Integer> lineArrayNew = new ArrayList<Integer>();
+    private static ArrayList<List<Integer>> arrArr = new ArrayList<List<Integer>>();
+    private static List<Path> keyList = new ArrayList<Path>();
+    private static int selctedTabIndex;
     ///////////
 
 
@@ -179,91 +185,106 @@ public class MainMenu {
     @FXML
     void initialize() throws Exception {
 
-        //tArea.setStyle("-fx-font-size: 12");
-        //tP.Init(tabBox,tabsPane,wqf);
-        /*//treeView = new TreeView<String>();
-        c.setOnAction(new EventHandler<ActionEvent>() {
-            @Override public void handle(ActionEvent e) {
-                DirectoryChooser dc = new DirectoryChooser();
-                dc.setInitialDirectory(new File(System.getProperty("user.home")));
-                File choice = dc.showDialog(myStage);
-                if(choice == null || ! choice.isDirectory()) {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setHeaderText("Could not open directory");
-                    alert.setContentText("The file is invalid.");
 
-                    alert.showAndWait();
-                } else {
-                    treeView.setRoot(getNodesForDirectory(choice));
-                }
-            }
-        });*/
-
-
+                    /*tabsPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> { ////////UNUSED////////
+                                selctedTabIndex = tabsPane.getSelectionModel().getSelectedIndex();
+                                System.out.println("CURRENT TAB IS " + tabsPane.getSelectionModel().getSelectedItem().getText() + tabsPane.getSelectionModel().getSelectedIndex());
+                                System.err.println("changed");
+                            });*/
 
                     nextLine.setOnAction(event -> {
                         System.out.println(tabsPane.getSelectionModel().getSelectedItem() + "TQWTW");
-                        //if(tabsPane.getSelectionModel().getSelectedItem().getText() == tp.ge)
-                        int index = files.indexOf(tabsPane.getSelectionModel().getSelectedItem().getText());
-                        if(index==tabsPane.getSelectionModel().getSelectedIndex())
-                                if(iterLines<textLines.size()) {
-                                    tP.getFindedLine(tP.getTextArea(), textLines.get(iterLines));
-                                    System.out.println(iterLines + " Выполнено!");
-                                    iterLines++;
-                                }
-                                else{
-                                    iterLines=0;
-                                    System.out.println(iterLines + " ЗАНОГО!");
-                                }
+                        List<Integer> lines = arrArr.get(selctedTabIndex);
+                        ObservableList<Tab> t = tabsPane.getTabs();
+                        System.out.println("OBS LIST TAB: " + t.get(tabsPane.getSelectionModel().getSelectedIndex()));
+                        if (iterLines < lines.size()) {
+                            tP.getFindedLine(tP.getTextArea(tabsPane.getSelectionModel().getSelectedIndex()), lines.get(iterLines));
+                            System.out.println("LINE "+lines.get(iterLines));
+                            System.out.println("SELECTED TEXT AREA: " + tP.getTextArea(tabsPane.getSelectionModel().getSelectedIndex()));
+                            System.out.println(iterLines + " Выполнено!");
+                            iterLines++;
+                        } else {
+                            iterLines = 0;
+                            System.out.println(iterLines + " ЗАНОГО!");
+                        }
                     });
 
 
-        /*nextLine.setOnAction(event -> {
-            tP.getFindedLine(tP.getTextArea(),i2);
-            System.out.println(i2);
-        });*/
-
         buttonSearch.setOnAction(event -> {
-            searchResult.clear();
+            if (dirPath != null) {
+                if (!InputTextSearch.getText().isEmpty()) {
+                    if (!inputFileExtension.getText().isEmpty()) {
+                        searchResult.clear();
+                        arrArr.clear();
+                        Path oldkey = null;
+                        try {
+                            files.clear();
+                            testSe(Paths.get(dirPath), InputTextSearch.getText(), inputFileExtension.getText());
+                            FolderTreeViewWithFilter.setDirPath(String.valueOf(dirPath));
+                            FolderTreeViewWithFilter fl = new FolderTreeViewWithFilter();
+                            fl.start(myStage, treeView, inputFileExtension, root);
+                        } catch (IOException e) {
+                            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                            alert.setHeaderText(null);
+                            alert.setTitle("ERROR");
+                            alert.setContentText("Директория не выбрана!");
+                            alert.showAndWait();
+                        }
 
-            //treeView.setRoot(null);
-            //root.getChildren().removeAll();
-            try {
-                files.clear();
-                testSe(Paths.get(dirPath),InputTextSearch.getText(),inputFileExtension.getText());
-                FolderTreeViewWithFilter.setDirPath(String.valueOf(dirPath));
-                FolderTreeViewWithFilter fl = new FolderTreeViewWithFilter();
-                fl.start(myStage,treeView,inputFileExtension,root);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-            for (Map.Entry<Path, Map<Integer, String>> entry : infoString.entrySet()) {
-                Path key = entry.getKey();
+                        for (Map.Entry<Path, Map<Integer, String>> entry : infoString.entrySet()) {
+                            Path key = entry.getKey();
 
-                //searchResult.appendText(key.toString() + " ");
-                System.out.println(key);
-                for (Map.Entry<Integer, String> entry1 : infoString.get(entry.getKey()).entrySet()) {
-                    i2 = entry1.getKey();
-                    System.out.println(i2);
-                    textLines.add(i2);
-                    String str = entry1.getValue();
-                    try {
-                        tP.Init(tabBox,tabsPane,wqf);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                            List<Integer> lineArray = new ArrayList<Integer>();
+                            lineArray.clear();
+                            if (keyList.isEmpty())
+                                keyList.add(key);
+
+                            System.out.println("KEY IS : " + key);
+                            for (Map.Entry<Integer, String> entry1 : infoString.get(entry.getKey()).entrySet()) {
+                                i2 = entry1.getKey();
+                                System.out.println(i2);
+                                System.out.println(keyList.get(keyList.size() - 1) + " AND " + key);
+                                lineArray.add(i2);
+                                String str = entry1.getValue();
+                                try {
+                                    if (oldkey != key)
+                                        tP.Init(tabBox, tabsPane, wqf, key);
+                                    oldkey = key;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                searchResult.appendText(key.toString() + " " + i2 + " " + str);
+                                searchResult.appendText("\n");
+                                keyList.add(key);
+
+                            }
+                            arrArr.add(lineArray);
+                        }
+                        System.out.println("RESULT : " + pathKeyLineValue);
+                        System.out.println("ARR " + arrArr);
+                        infoString.clear();
+                    } else {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setHeaderText(null);
+                        alert.setTitle("ERROR");
+                        alert.setContentText("Расширение файла не введено");
+                        alert.showAndWait();
                     }
-                    searchResult.appendText(key.toString() + " " + i2 + " " + str);
-                    searchResult.appendText("\n");
-                    //System.out.println(i2);
-                    //System.out.println(str);
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText(null);
+                    alert.setTitle("ERROR");
+                    alert.setContentText("Текст для поиска не введен");
+                    alert.showAndWait();
                 }
-                //searchResult.appendText("\n");
-
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText(null);
+                alert.setTitle("ERROR");
+                alert.setContentText("Дерриктория не выбрана");
+                alert.showAndWait();
             }
-            System.out.println("RESULT : " + pathKeyLineValue);
-            infoString.clear();
-
         });
         buttonChooseDir.setOnAction(event -> {
             try {
@@ -274,7 +295,7 @@ public class MainMenu {
         });
     }
 
-    private List<String> getFilesExtension(List<File> filesInFolder) {
+   /* private List<String> getFilesExtension(List<File> filesInFolder) { //////////UNUSED//////////
         List<String> extension = null;
         for (int files = 0; files < filesInFolder.size(); files++) {
             File file = filesInFolder.get(files);
@@ -282,7 +303,7 @@ public class MainMenu {
             extension.add(name.substring(name.lastIndexOf(".")));
         }
         return extension;
-    }
+    }*/
 
     private void dirChoose(Stage primaryStage) throws NullPointerException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -305,13 +326,5 @@ public class MainMenu {
     public static List<Path> getFiles()
     {
         return files;
-    }
-
-    private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {
-        // Set title for DirectoryChooser
-        directoryChooser.setTitle("Select Some Directories");
-
-        // Set Initial Directory
-        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
     }
 }

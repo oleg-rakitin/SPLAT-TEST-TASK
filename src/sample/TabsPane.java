@@ -31,7 +31,7 @@ public class TabsPane {
     private static final Random random = new Random(42);
     private static String line;
     public TextArea tArea;
-    public static Map<Tab,TextArea> hm = new HashMap<Tab,TextArea>();
+    public static Map<Integer,TextArea> hm = new HashMap<Integer,TextArea>();
     private static List<Tab> tabList = new ArrayList<Tab>();
     private static  List<Path> filePath = new ArrayList<Path>();
     javafx.scene.control.TabPane tabPane;
@@ -46,7 +46,7 @@ public class TabsPane {
         layout.setSpacing(10);
         //layout = createTabControls(tabPane);
 
-        createTabControls(tabPane1, b, Path path);
+        createTabControls(tabPane1, b, path);
         layout.setPadding(new Insets(10));
         VBox.setVgrow(tabPane1, Priority.ALWAYS);
 
@@ -59,7 +59,7 @@ public class TabsPane {
         return tabList;
     }
 
-    public static Map<Tab,TextArea> getHM(){
+    public static Map<Integer,TextArea> getHM(){
         return hm;
     }
 
@@ -67,31 +67,35 @@ public class TabsPane {
         //Button addTab = new Button("New Tab");
         List<Path> p = MainMenu.getFiles();
 
-        b.setOnAction(event -> {
-            try {
-                int ee = tabPane.getTabs().size();
-                if(ee!=0)
-                    tabPane.getTabs().remove(0, ee);
-                for(int i = 0;i<p.size();i++) {
-                    tabPane.getTabs().add(
-                            createTab(i,path)
-                    );
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            for(int i = 0; i<tabPane.getTabs().size();i++){
-                System.out.println(tabList.add(tabPane.getTabs().get(i)));
-            }
-            for(Map.Entry<Tab, TextArea> entry1 : hm.entrySet()){
-                Tab i2 = entry1.getKey();
-                System.out.println(i2);
-                //textLines.add(i2);
-                TextArea str = entry1.getValue();
-                System.out.println(str);
-            }
-            //tabPane.getSelectionModel().selectLast();
-        });
+        // b.setOnAction(event -> {
+        // try {
+        int ee = tabPane.getTabs().size();
+        //if (ee != 0)
+        //    tabPane.getTabs().remove(0, ee);
+        //for(int i = 0;i<p.size();i++) {
+        try {
+            tabPane.getTabs().add(
+                    createTab(path));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //   );
+        //   }
+        // } catch (IOException e) {
+        //    e.printStackTrace();
+        // }
+        for (int i = 0; i < tabPane.getTabs().size(); i++) {
+            System.out.println(tabList.add(tabPane.getTabs().get(i)));
+        }
+        for (Map.Entry<Integer, TextArea> entry1 : hm.entrySet()) {
+            Integer i2 = entry1.getKey();
+            System.out.println(i2);
+            //textLines.add(i2);
+            TextArea str = entry1.getValue();
+            System.out.println(str);
+        }
+        //tabPane.getSelectionModel().selectLast();
+        // });
         b.setMinSize(
                 b.USE_PREF_SIZE,
                 b.USE_PREF_SIZE
@@ -99,19 +103,20 @@ public class TabsPane {
         return b;
     }
 
+
     private static List<Path> getFiles()
     {
         return filePath;
     }
 
-    private Tab createTab(int i,Path path) throws IOException {
-        tabNum++;
+    private Tab createTab(Path path) throws IOException {
+
         List<Path> files = MainMenu.getFiles();
-        Tab tab = new Tab(files.get(i).toString());
+        Tab tab = new Tab(path.toString());
         StackPane tabLayout = new StackPane();
         tabLayout.setStyle("-fx-background-color: " + randomRgbColorString());
-        tArea = readFile(files.get(i), ".txt");
-        filePath.add(files.get(i));
+        tArea = readFile(path, ".txt");
+        filePath.add(path);
 
         //Label tabText = new Label();
         tArea.setStyle("-fx-font-size: 15px;");
@@ -119,13 +124,16 @@ public class TabsPane {
 
         tab.setContent(tabLayout);
 
-        hm.put(tab,tArea);
+        hm.put(tabNum,tArea);
+        tabNum++;
         System.out.println("PARENT: " + tArea.getParent());
         return tab;
     }
 
-    public TextArea getTextArea() {
-        return tArea;
+    public TextArea getTextArea(int index) {
+        TextArea tx = hm.get(index);
+        System.out.println("GETTED TX: " +tx + " " + hm);
+        return tx;
     }
 
     public void getFindedLine(TextArea ta, int line) {
@@ -134,7 +142,7 @@ public class TabsPane {
 
             // Define desired line
             //final int line = 30;
-
+            System.out.println("TabsPane : " + ta);
             // Index of the first character in line that we look for.
             int index = 0;
             // for this example following line will work:
@@ -169,6 +177,7 @@ public class TabsPane {
 
                 // Scroll to the top-Y of our line
                 ta.setScrollTop(lineBounds.getMinY () + this.tArea.getScrollTop ());
+                ta.selectRange(5,line);
             }
         });
     }
