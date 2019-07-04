@@ -1,29 +1,19 @@
 package sample;
 
-import java.io.*;
-import java.net.URL;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
-import static sample.fileSearchConst.ROOT_FOLDER;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class MainMenu {
 
@@ -37,7 +27,7 @@ public class MainMenu {
     private static int selctedTabIndex;
     private TabsPane tP = new TabsPane();
     private int i2=0;
-    private int iterLines =0;
+    private static int iterLines =0;
     private Stage myStage;
 
 
@@ -133,14 +123,14 @@ public class MainMenu {
 
 
     @FXML
-    void initialize() throws Exception {
+    void initialize() {
 
 
-                    /*tabsPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> { ////////UNUSED////////
+                    tabsPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
                                 selctedTabIndex = tabsPane.getSelectionModel().getSelectedIndex();
                                 System.out.println("CURRENT TAB IS " + tabsPane.getSelectionModel().getSelectedItem().getText() + tabsPane.getSelectionModel().getSelectedIndex());
                                 System.err.println("changed");
-                            });*/
+                            });
 
                     nextLine.setOnAction(event -> {
                         System.out.println(tabsPane.getSelectionModel().getSelectedItem() + "TQWTW");

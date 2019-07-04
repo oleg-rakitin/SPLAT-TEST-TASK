@@ -38,7 +38,7 @@ public class TabsPane {
 
 
 
-    public void Init(VBox layout, TabPane tabPane1, Path path) throws Exception {
+    public void Init(VBox layout, TabPane tabPane1, Path path) {
         layout.setSpacing(10);
 
         createTabControls(tabPane1, path);
@@ -134,7 +134,7 @@ public class TabsPane {
             if (lineFound) {
                 Rectangle2D lineBounds = ((com.sun.javafx.scene.control.skin.TextAreaSkin) ta.getSkin()).getCharacterBounds(index);
 
-                ta.setScrollTop(lineBounds.getMinY () + this.tArea.getScrollTop ());
+                ta.setScrollTop(lineBounds.getMinY () + ta.getScrollTop ());
                 ta.selectRange(5,line);
             }
         });
